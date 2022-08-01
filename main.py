@@ -16,16 +16,20 @@ shutil.copyfile(src, dest)
 # Create new empty workbook to start from
 wb_result = Workbook()
 # Sheets
-wb_result.active.title = "Project Details"
-ws_project_details = wb_result["Project Details"]
+wb_result.create_sheet("Project Details")
 wb_result.create_sheet("Budget")
-ws_budget = wb_result["Budget"]
 wb_result.create_sheet("Categories")
-ws_categories = wb_result["Categories"]
 wb_result.create_sheet("Cash Outflow")
-ws_cash_outflow = wb_result["Cash Outflow"]
+wb_result.create_sheet("Cash Inflow")
 wb_result.create_sheet("Reports")
+ws_project_details = wb_result["Project Details"]
+ws_budget = wb_result["Budget"]
+ws_categories = wb_result["Categories"]
+ws_cash_outflow = wb_result["Cash Outflow"]
+ws_cash_inflow = wb_result["Cash Inflow"]
 ws_reports = wb_result["Reports"]
+# Delete default sheet
+wb_result.remove(wb_result["Sheet"])
 
 # Project Details
 if True:
@@ -157,7 +161,6 @@ if True:
             cash_outflow_date += relativedelta(months=1)
 
 # Actual costs by date and category nested dict
-# This is a bit overkill. Maybe not.
 actual_by_cat_date = {}
 for row in ws_cash_outflow.iter_rows(min_row=2):
     if row[0].value not in actual_by_cat_date:
@@ -176,7 +179,7 @@ if True:
     ws_reports.append(["Project ID", "Date", "Completion", "ACWP", "BCWP", "BCWS"])
 
     # Project ID
-    for id in project_ids:
+    for id in actual_by_cat_date:
         months_passed = 1
         acwp = 0
         # Date of Report
@@ -205,6 +208,118 @@ if True:
         row[3].style = "Currency"
         row[4].style = "Currency"
         row[5].style = "Currency"
+
+# Project completions nested dict
+project_completions = {}
+for row in ws_reports.iter_rows(min_row=2):
+    if row[0].value not in project_completions:
+        project_completions[row[0].value] = {}
+    project_completions[row[0].value][row[1].value] = row[2].value
+# Projected incomes dict
+projected_incomes = {}
+for row in ws_budget.iter_rows(min_row=2):
+    projected_incomes[row[0].value] = row[5].value
+
+# Cash Inflow
+if True:
+    # Headers
+    ws_cash_inflow.append(["Project ID", "Date", "Income"])
+
+    for id in project_completions:
+        # For each project, Income is separated into 5 sections
+        # 20% of Projected Income at 0%, 25%, 50%, 75%, and 100% completion each. 100% shouldnt be possible here but added just in case.
+        income = projected_incomes[id] / 5
+        milestones = []
+        for date in project_completions[id]:
+            completion = project_completions[id][date]
+
+            append = True
+
+            if milestones == []:
+                pass
+            elif completion >= 0.25 and True not in [i >= 0.25 for i in milestones]:
+                pass
+            elif completion >= 0.5 and True not in [i >= 0.5 for i in milestones]:
+                pass
+            elif completion >= 0.75 and True not in [i >= 0.75 for i in milestones]:
+                pass
+            elif completion >= 1 and True not in [i >= 1 for i in milestones]:
+                pass
+            else:
+                append = False
+
+            if append:
+                milestones.append(completion)
+                ws_cash_inflow.append([id, date, income])
+    
+    # Styles
+    for row in ws_cash_inflow.iter_rows(min_row=2):
+        row[2].style = "Currency"
+
+# Project completions latest dict
+project_completions_latest = {}
+for row in ws_reports.iter_rows(min_row=2):
+    project_completions_latest[row[0].value] = row[2].value
+
+# Other
+if True:
+    # Change Project Status
+    for row in ws_project_details.iter_rows(min_row=2):
+        if project_completions_latest[row[0].value] >= 1:
+            row[3].value = "Finished"
+        elif project_completions_latest[row[0].value] >= 0.7:
+            row[3].value = "Finishing"
+        elif project_completions_latest[row[0].value] >= 0.3:
+            row[3].value = "Execution"
+        elif project_completions_latest[row[0].value] >= 0.15:
+            row[3].value = "Planned"
+        else:
+            row[3].value = "Planning"
+
+    # Regions
+    regions = [
+    "North-East",
+    "North-East",
+    "Central",
+    "West",
+    "West",
+    "West",
+    "Central",
+    "Central",
+    "West",
+    "Central",
+    "North",
+    "East",
+    "West",
+    "West",
+    "West",
+    "Central",
+    "Central",
+    "North-East",
+    "West",
+    "West",
+    "Central",
+    "North",
+    "North",
+    "Central",
+    "Central",
+    "Central",
+    "Central",
+    "North-East",
+    "North-East",
+    "Central",
+    "Central",
+    "Central",
+    "East",
+    "East",
+    "East"
+    ]
+    ws_project_details.insert_cols(4, 1)
+    ws_project_details["D1"] = "Region"
+    i = 0
+    for row in ws_project_details.iter_rows(min_row=2):
+        row[3].value = regions[i]
+        i += 1
 
 # Save result
 wb_result.save("./Files/Output/Result.xlsx")
