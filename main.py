@@ -264,6 +264,7 @@ for row in ws_reports.iter_rows(min_row=2):
 # Other
 if True:
     # Change Project Status
+    # 0-15 = Planning, 15-30 = Planned, 30-70 = Execution, 70-100 = Finishing, 100 = Finished
     for row in ws_project_details.iter_rows(min_row=2):
         if project_completions_latest[row[0].value] >= 1:
             row[3].value = "Finished"
@@ -277,6 +278,7 @@ if True:
             row[3].value = "Planning"
 
     # Regions
+    # Hardcoded. Manually researched and typed.
     regions = [
     "North-East",
     "North-East",
