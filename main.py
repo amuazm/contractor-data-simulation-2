@@ -3,7 +3,7 @@ from openpyxl import Workbook, load_workbook
 import datetime
 import numpy as np
 from dateutil.relativedelta import relativedelta
-import collections
+import names
 # import matplotlib.pyplot as plt
 
 import openpyxl
@@ -276,6 +276,16 @@ if True:
             row[3].value = "Planned"
         else:
             row[3].value = "Planning"
+
+    # Names
+    r = 0
+    for row in ws_project_details.iter_rows(min_row=2):
+        if r == 0:
+            r = np.random.randint(1, 6)
+            name = names.get_full_name()
+        row[7].value = name
+        r -= 1
+
 
     # Regions
     # Hardcoded. Manually researched and typed.
