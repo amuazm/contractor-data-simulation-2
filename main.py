@@ -126,6 +126,10 @@ if True:
             ws_categories.append([id, category, k_nums[i]])
             i += 1
 
+    # Styles
+    for row in ws_categories.iter_rows(min_row=2):
+        row[2].style = "Currency"
+
 # Start dates dict
 start_dates = {}
 for row in ws_budget.iter_rows(min_row=2):
@@ -163,6 +167,9 @@ if True:
                 monthly_cash_outflow = budgets_by_cat[id][category] / project_durations[id] * r1 * r2 * r3
                 ws_cash_outflow.append([id, cash_outflow_date, category, monthly_cash_outflow])
             cash_outflow_date += relativedelta(months=1)
+    # Styles
+    for row in ws_cash_outflow.iter_rows(min_row=2):
+        row[3].style = "Currency"
 
 # Actual costs by date and category nested dict
 actual_by_cat_date = {}
@@ -295,12 +302,13 @@ if True:
             row[3].value = "Planning"
 
     # Names
+    ws_project_details["G1"] = "Project Manager"
     r = 0
     for row in ws_project_details.iter_rows(min_row=2):
         if r == 0:
             r = np.random.randint(1, 6)
             name = names.get_full_name()
-        row[7].value = name
+        row[6].value = name
         r -= 1
 
 
