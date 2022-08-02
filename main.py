@@ -151,12 +151,16 @@ if True:
         # First cash outflow date will be 1 month after project start date
         cash_outflow_date += relativedelta(months=1)
         # Add 1 month to date until today's date
-        # TODO: 80.0% to 120.0% budget multiplier
+        # Random Project Cost
+        r1 = np.random.randint(700, 1300 + 1) / 1000
         while(datetime.date.today() - cash_outflow_date > datetime.timedelta(days=0)):
+            # Random Date Cost
+            r2 = np.random.randint(800, 1200 + 1) / 1000
             for category in categories:
-                # TODO: 95% to 105% category budget multiplier
+                # Random Category Cost
+                r3 = np.random.randint(900, 1100 + 1) / 1000
                 # Actual Category Monthly Cost = Category Budget / Project Duration
-                monthly_cash_outflow = budgets_by_cat[id][category] / project_durations[id]
+                monthly_cash_outflow = budgets_by_cat[id][category] / project_durations[id] * r1 * r2 * r3
                 ws_cash_outflow.append([id, cash_outflow_date, category, monthly_cash_outflow])
             cash_outflow_date += relativedelta(months=1)
 
@@ -182,10 +186,23 @@ if True:
     for id in actual_by_cat_date:
         months_passed = 1
         acwp = 0
+        # Random Project Completion
+        r1 = np.random.randint(950, 1050 + 1) / 1000
+        r2 = r1
+        completion = 0
         # Date of Report
         for date in actual_by_cat_date[id]:
             # Completion
-            completion = months_passed * (1/project_durations[id])
+            if (completion > 1):
+                break
+            completion = months_passed * (1/project_durations[id]) * r1
+            if (completion > 1):
+                completion = 1
+            r1 *= r2
+            if r2 < 1:
+                r2 *= 1.001
+            else:
+                r2 *= 0.999
 
             # ACWP
             date_cost = 0
