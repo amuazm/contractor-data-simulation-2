@@ -6,8 +6,6 @@ from dateutil.relativedelta import relativedelta
 import names
 # import matplotlib.pyplot as plt
 
-import openpyxl
-
 # Copy dataset to refer from as backup
 src = "./Files/Input/Budget Dataset Modified.xlsx"
 dest = "./Files/Output/Data.xlsx"
