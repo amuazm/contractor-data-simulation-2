@@ -308,7 +308,6 @@ if True:
         row[6].value = name
         r -= 1
 
-
     # Regions
     # Hardcoded. Manually researched and typed.
     regions = [
