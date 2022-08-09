@@ -88,7 +88,6 @@ if True:
         row[5].value = overall_budgets[row[0].value] * np.random.randint(1020, 1080)/1000
         row[5].style = "Currency"
 
-
 # Categories
 if True:
     # Headers
